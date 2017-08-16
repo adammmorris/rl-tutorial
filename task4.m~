@@ -1,0 +1,70 @@
+%% Simulate
+
+% initialize parameters
+numRounds = 100000;
+numPlayerStates = 22; % 21 possible sums, plus "bust"
+numDealerStates = 22;
+numActions = 2; % 1 = hit, 2 = stay
+
+% initialize matrix of Q values, other parameters
+% Note the two
+Q = zeros(numPlayerStates, numDealerStates, numActions);
+alpha = .01; % learning rate
+beta = .1; % inverse temperature
+%epsilon = .2;
+
+for curRound = 1:numRounds
+   playerCards = [];
+   dealerCards = [];
+   
+   %% Deal initial hand
+   playerCards(end + 1) = getRandomCard();
+   playerCards(end + 1) = getRandomCard(); 
+   dealerCards(end + 1) = getRandomCard();
+   dealerCards(end + 1) = getRandomCard(); 
+   
+   % Make first decision
+   playerState = sum(playerCards);
+   dealerState = sum(dealerCards);
+   actionProbabilities = exp(beta * Q(playerState, dealerState, :)) / sum(exp(beta * Q(playerState, dealerState, :)));
+   action = randsample(1:numActions, 1, true, actionProbabilities);
+
+   if action == 1 % if they hit...
+       % get new card
+       playerCards(end + 1) = getRandomCard();
+       nextPlayerState = sum(playerCards);
+       
+       if nextPlayerState > 21
+           nextPlayerState = 22;
+       end
+       
+       % update, choose again
+       Q(playerState, dealerState, action) = Q(playerState, dealerState, action) + ...
+           alpha * (max(Q(nextPlayerState, dealerState, :)) - Q(playerState, dealerState, action));
+
+       playerState = nextPlayerState;
+       actionProbabilities = exp(beta * Q(playerState, dealerState, :)) / sum(exp(beta * Q(playerState, dealerState, :)));
+       action = fastrandsample(actionProbabilities, 1);     
+
+       if action == 1 % if they hit..
+          playerCards(end + 1) = getRandomCard(); % get new card
+          finalPlayerState = sum(playerCards);
+       else % if they stayed, end it
+          finalPlayerState = playerState;
+       end
+   else
+       % If they stayed, end it
+       finalPlayerState = playerState;
+   end
+   
+   if finalPlayerState > 21
+       finalPlayerState = 22;
+   end
+   
+   reward = rewardMatrix(finalPlayerState);
+   Q(playerState, action) = Q(playerState, action) + alpha * (reward - Q(playerState, action));
+end
+
+%% Plot results
+
+plotResults(Q, 3);
