@@ -3,4 +3,8 @@ Welcome to my RL tutorial! You should read "Introduction.pdf" first. Then, you c
 
 I have written solution code for all missions, but it is highly recommended that you struggle through your own code before looking at mine.
 
-- Adam Morris
+Adam Morris
+
+http://theadammorris.com
+
+adam.mtc.morris@gmail.com
