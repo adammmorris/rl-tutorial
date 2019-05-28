@@ -5,6 +5,6 @@ I have written solution code for all missions, but it is highly recommended that
 
 Adam Morris
 
-http://theadammorris.com
+http://thatadammorris.com
 
-adam.mtc.morris@gmail.com
+thatadammorris@gmail.com
